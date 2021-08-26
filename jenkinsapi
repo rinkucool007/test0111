@@ -1,0 +1,76 @@
+curl -X GET http://localhost:1080/job/product_search/config.xml -u username:xxxxxx-xxxxx-4d5f-9a32-53077c56c1a9 -o product_search.xml
+
+curl -X GET http://localhost:1080/job/product_search/config.xml --user xxxx:xxxxx -o product_search.xml
+
+curl -s -XPOST 'http://localhost:1080/createItem?name=product_search_test01' --user xxxx:xxxxx --data-binary @product_search.xml -H "Content-Type:text/xml"
+#### Error 403 No valid crumb was included in the request
+
+
+CRUMB=$(curl -s 'http://localhost:1080/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)' --user xxxx:xxxxx)
+curl -s -XPOST 'http://localhost:1080/createItem?name=product_search_test01' --user xxxx:xxxxx --data-binary @product_search.xml -H "$CRUMB" -H "Content-Type:text/xml"
+
+curl -X POST -H "Content-Type:application/xml" -d @product_search.xml --user xxxx:xxxxx "http://localhost:1080/createItem?name=product_search_test01"
+
+
+curl 'http://localhost:1080/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken' --data 'newTokenName=pratap' --user xxxx:xxxxx
+
+
+
+# check if job exists
+curl -XGET 'http://localhost:1080/checkJobName?value=yourJobFolderName' --user xxxx:xxxxx
+
+# with folder plugin
+curl -s -XPOST 'http://localhost:1080/job/FolderName/createItem?name=yourJobName' --data-binary @config.xml -H "Content-Type:text/xml" --user xxxx:xxxxx
+
+# without folder plugin
+curl -s -XPOST 'http://localhost:1080/createItem?name=yourJobName' --data-binary @config.xml -H "Content-Type:text/xml" --user xxxx:xxxxx
+
+# create folder
+curl -XPOST 'http://localhost:1080/createItem?name=FolderName&mode=com.cloudbees.hudson.plugins.folder.Folder&from=&json=%7B%22name%22%3A%22FolderName%22%2C%22mode%22%3A%22com.cloudbees.hudson.plugins.folder.Folder%22%2C%22from%22%3A%22%22%2C%22Submit%22%3A%22OK%22%7D&Submit=OK' --user xxxx:xxxxx -H "Content-Type:application/x-www-form-urlencoded"
+
+
+# see http://jenkins/api/
+
+
+
+curl -X POST -H "Content-Type:application/xml" -d "<project><builders/><publishers/><buildWrappers/></project>" --user xxxx:xxxxx http://localhost:1080/createItem?name=AA_TEST_JOB2
+
+
+
+
+curl -v -X GET http://localhost:1080/crumbIssuer/api/json --user xxxx:xxxxx
+curl -X POST http://jenkins-url:8080/job/<job-name>/build --user <username>:<password> -H 'Jenkins-Crumb: 0db38413bd7ec9e98974f5213f7ead8b'
+curl -s -XPOST 'http://localhost:1080/createItem?name=yourJobName' --data-binary @config.xml -H "Content-Type:text/xml" --user xxxx:xxxxx -H 'Jenkins-Crumb:24a7a3d1372a0d91b605dd3b73e72b8f87a62e3758177102647d98ff2c53e9ae'
+
+
+
+http://localhost:1080/configureSecurity
+
+
+
+COOKIE_JAR=/tmp/cookies
+crumb=$(curl --cookie-jar $COOKIE_JAR -u "username:password" 'http://localhost:8080/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
+curl --cookie $COOKIE_JAR -u "username:password" -H "$crumb" -X POST http://localhost:8080/job/test-job/build?delay=0sec
+
+
+
+crumb=$(curl -u "xxxx:xxxxx" 'http://localhost:1080/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
+curl -u "xxxx:xxxxx" -H "$crumb" -X POST http://localhost:1080/job/pipeline/job/maven01/build?delay=0sec
+
+
+http://localhost:1080/crumbIssuer/api/json
+
+
+
+
+
+
+export JENKINS_URL=http://localhost:1080
+export JENKINS_USER=xxxxx
+export JENKINS_PASSWORD=xxxxx
+export COOKIE_JAR=/tmp/cookies
+JENKINS_CRUMB=$(curl --silent --cookie-jar $COOKIE_JAR $JENKINS_URL'/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)' -u $JENKINS_USER:$JENKINS_PASSWORD)
+echo $JENKINS_CRUMB
+curl -I --cookie $COOKIE_JAR $JENKINS_URL/createItem?name=yourJob --data-binary @jenkins/config.xml -H $JENKINS_CRUMB -H "Content-Type:text/xml" -u $JENKINS_USER:$JENKINS_PASSWORD -v
+
+
