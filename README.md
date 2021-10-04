@@ -18,3 +18,20 @@ output {
        index => "my-index-%{+YYYY.MM.dd}"
     }
 }
+
+
+
+To get the latestfile from nexus snapshot
+
+NEXUS_URL=https://your-nexus.com
+MAVEN_REPO=maven-snapshots
+GROUP_ID=...
+ARTIFACT_ID=...
+VERSION=2.0.1-SNAPSHOT
+FILE_EXTENSION=jar
+
+download_url=$(curl -X GET "${NEXUS_URL}/service/rest/v1/search/assets?repository=${MAVEN_REPO}&maven.groupId=${GROUP_ID}&maven.artifactId=${ARTIFACT_ID}&maven.baseVersion=${VERSION}&maven.extension=${FILE_EXTENSION}" -H  "accept: application/json"  | jq -rc '.items | .[].downloadUrl' | sort | tail -n 1)
+
+echo $download_url
+
+wget $download_url
